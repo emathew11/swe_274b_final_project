@@ -20,7 +20,8 @@ class Account:
 
 class BankingSystemImpl(BankingSystem):
     def __init__(self): 
-        self.accounts = {}        
+        self.accounts = {}
+        self.num_withdraws = 0        
 
     # TODO: implement interface methods here
     def create_account(self, timestamp: int, account_id: str):
@@ -69,4 +70,30 @@ class BankingSystemImpl(BankingSystem):
         # returning top n spenders
         return [f"{account.id}({account.total_outgoing})" for account in sorted_accounts[:n]]
         
-    
+    def pay(self, timestamp: int, account_id: str, amount: int) -> str | None: 
+        ''' — should withdraw the given amount of money from the specified account. All withdraw transactions provide a 2% cashback - 
+        2% of the withdrawn amount (rounded down to the nearest integer) will be refunded to the account 
+        24 hours after the withdrawal. If the withdrawal is successful (i.e., the account holds sufficient 
+        funds to withdraw the given amount), returns a string with a unique identifier for the payment 
+        transaction in this format: "payment[ordinal number of withdraws from all accounts]" - 
+        e.g., "payment1", "payment2", etc. Additional conditions: 
+            o Returns None if account_id doesn't exist. 
+            o Returns None if account_id has insufficient funds to perform the payment. 
+            o top_spenders should now also account for the total amount of money withdrawn from 
+            accounts. 
+            o The waiting period for cashback is 24 hours, equal to 24 * 60 * 60 * 1000 = 
+            86400000 milliseconds (the unit for timestamps). So, cashback will be processed at 
+            timestamp timestamp + 86400000. 
+            o When it's time to process cashback for a withdrawal, the amount must be refunded to the 
+            account before any other transactions are performed at the relevant timestamp. #priority queue maybe??? '''
+        def cashback(self, timestamp: int, amount: int): #might not have to nest function here 
+            time.sleep(timestamp + 86400000) #not sure if we want to sleep here
+            cashback = round(amount * 0.02)
+            self.accounts[account_id].deposit(cashback)
+            
+        if account_id not in self.accounts.keys():
+            return None
+        if self.accounts[account_id].balance < amount:
+            return None
+        
+        
