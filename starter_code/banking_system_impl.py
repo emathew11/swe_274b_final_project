@@ -2,9 +2,10 @@ import time
 from banking_system import BankingSystem
 
 class Account:
-    def __init__(self, id, balance=0): 
+    def __init__(self, id, balance=0, total_outgoing=0): 
         self.id = id
         self.balance = balance
+        self.total_outgoing = total_outgoing
 
     # add amount if transferred to account
     def deposit(self, amount):
@@ -14,6 +15,7 @@ class Account:
     # decrease amount if withdrawn from account
     def withdraw(self, amount): 
         self.balance -= amount
+        self.total_outgoing += amount
         return self.balance    
 
 class BankingSystemImpl(BankingSystem):
@@ -54,4 +56,17 @@ class BankingSystemImpl(BankingSystem):
         self.accounts[target_account_id].deposit(amount)
         source_balance = self.accounts[source_account_id].withdraw(amount)
         return source_balance
+    
+    def top_spenders(self, timestamp: int, n: int) -> list[str]:
+        # sorts accounts by decreasing total_outgoing amount
+        # if there is a tie, sorts by ascending account id
+        sorted_accounts = sorted(
+            # accounts.values() are Accounts
+            self.accounts.values(),
+            # sorting accounts
+            key=lambda account: (-account.total_outgoing, account.id)
+        )
+        # returning top n spenders
+        return [f"{account.id}({account.total_outgoing})" for account in sorted_accounts[:n]]
         
+    
