@@ -96,4 +96,20 @@ class BankingSystemImpl(BankingSystem):
         if self.accounts[account_id].balance < amount:
             return None
         
+    def get_payment_status(self, timestamp: int, account_id: str, payment: str) -> str | None:
+        """
+        Should return the status of the payment transaction for the
+        given `payment`.
+        Specifically:
+          * Returns `None` if `account_id` doesn't exist.
+          * Returns `None` if the given `payment` doesn't exist for
+          the specified account.
+          * Returns `None` if the payment transaction was for an
+          account with a different identifier from `account_id`.
+          * Returns a string representing the payment status:
+          `"IN_PROGRESS"` or `"CASHBACK_RECEIVED"`.
+        """
+        # default implementation
+        return None
+        
         
