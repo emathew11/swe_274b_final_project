@@ -1,6 +1,7 @@
 import time
 from datetime import datetime
 import heapq
+import math
 from banking_system import BankingSystem
 
 class Account:
@@ -41,6 +42,7 @@ class BankingSystemImpl(BankingSystem):
         self.num_withdraws = 1
         # keep track of cashbacks that need to be processed with priority queue
         self.pending_cashbacks = [] 
+        self.completed_cashbacks = []
 
     # TODO: implement interface methods here
     def create_account(self, timestamp: int, account_id: str):
@@ -116,6 +118,7 @@ class BankingSystemImpl(BankingSystem):
             
         if account_id not in self.accounts.keys():
             return None
+        self.process_cashbacks(timestamp)
         if self.accounts[account_id].balance < amount:
             return None
         
@@ -124,7 +127,7 @@ class BankingSystemImpl(BankingSystem):
         #self.accounts[account_id].deposit(timestamp + 86400000, round(amount*0.02))
 
         # push (timestamp + 24 hrs, account_id, payment_id, cashback amount) to pending_cashbacks priority queue
-        heapq.heappush(self.pending_cashbacks, (timestamp + 86400000, account_id, payment_id, round(amount*0.02)))
+        heapq.heappush(self.pending_cashbacks, (timestamp + 86400000, account_id, payment_id, math.floor(amount*0.02)))
         self.num_withdraws += 1
 
         return payment_id
@@ -134,7 +137,8 @@ class BankingSystemImpl(BankingSystem):
         # if it is, then deposit the cashback and take the cashback off of the pending_cashbacks priority queue
         while self.pending_cashbacks and self.pending_cashbacks[0][0] <= timestamp:
             cashback_time, cashback_account_id, payment_id, cashback_amount = heapq.heappop(self.pending_cashbacks)
-            self.accounts[cashback_account_id].deposit(timestamp, cashback_amount)    
+            self.accounts[cashback_account_id].deposit(cashback_time, cashback_amount)   
+            self.completed_cashbacks.append([cashback_time, cashback_account_id, payment_id, cashback_amount])
         
     def get_payment_status(self, timestamp: int, account_id: str, payment: str) -> str | None:
         """
@@ -152,6 +156,7 @@ class BankingSystemImpl(BankingSystem):
         # check whether account_id exists, return None if not
         if account_id not in self.accounts.keys():
             return None
+        self.process_cashbacks(timestamp)
         # iterate over pending cashbacks to find if there is a matching account/payment id for cashbacks in progress
         # return None if given payment id does not exist for specified account
         # return None if payment transaction was for a different account_id
@@ -161,8 +166,11 @@ class BankingSystemImpl(BankingSystem):
             if account_id == cashback_account_id and payment == cashback_payment_id:
                 if cashback_time > timestamp:
                     return "IN_PROGRESS"
-                else: 
-                    return "CASHBACK_RECEIVED"
+                
+        for cashback in self.completed_cashbacks:
+            cashback_time, cashback_account_id, cashback_payment_id, cashback_amount = cashback
+            if account_id == cashback_account_id and payment == cashback_payment_id:
+                return "CASHBACK_RECEIVED"
         
         return None
         
