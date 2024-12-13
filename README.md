@@ -3,7 +3,7 @@
 ### Collaborators: Casey Tomlin, Esther Mathew, Keerthana Sivakumar, Lucia Lopez
 
 ## About 
-This repository contains starter_code folder with banking_system_impl.py, banking_system.py which contains our group's implementation of a banking system. The main.sh and run_single_test.sh files are used to run the test cases needed for each levels provided in the the tests folder. In addition, UML Diagram.jpeg contains our group's UML diagram reflecting level 1 implementation. All implementations were done using python programming language.
+This repository contains starter_code folder with banking_system_impl.py, banking_system.py which contains our group's implementation of a banking system. The main.sh and run_single_test.sh files are used to run the test cases needed for each levels provided in the the tests folder. Additionally, UML Diagram.jpeg contains our group's UML diagram reflecting level 1 implementation. All implementations were done using python programming language.
 
 banking_system_impl.py contains our implementation of a banking system of levels 1-4 as such: 
 
